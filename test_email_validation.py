@@ -1,26 +1,23 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 driver = webdriver.Chrome()
 driver.implicitly_wait(10)
 
-def test_invalid_login():
-    driver.get("https://example.com/login")
+def test_email_format_validation():
+    driver.get("https://example.com/register")
     
-    # Enter invalid login credentials
-    driver.find_element(By.ID, "username").send_keys("invaliduser")
-    driver.find_element(By.ID, "password").send_keys("wrongpassword")
-    driver.find_element(By.ID, "login-btn").click()
+    email_field = driver.find_element(By.NAME, "email")
     
-    # Verify the error message is displayed
-    error_element = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.ID, "error-message"))
-    )
+    # Input invalid email format
+    email_field.send_keys("invalidemailformat.com")
+    driver.find_element(By.NAME, "password").click()  # Click away to trigger validation
     
-    assert error_element.is_displayed(), "Error message was not displayed!"
-    print("Invalid login test passed!")
+    # Check for validation error message
+    validation_error = driver.find_element(By.ID, "email-error-msg")
+    assert validation_error.is_displayed(), "Email format validation failed to trigger!"
+    
+    print("Email format validation test passed!")
 
-test_invalid_login()
+test_email_format_validation()
 driver.quit()
