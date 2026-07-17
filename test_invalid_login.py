@@ -6,25 +6,21 @@ from selenium.webdriver.support import expected_conditions as EC
 driver = webdriver.Chrome()
 driver.implicitly_wait(10)
 
-def test_user_registration():
-    driver.get("https://example.com/register")
+def test_invalid_login():
+    driver.get("https://example.com/login")
     
-    # Fill in valid user details
-    driver.find_element(By.NAME, "first_name").send_keys("John")
-    driver.find_element(By.NAME, "last_name").send_keys("Doe")
-    driver.find_element(By.NAME, "email").send_keys("johndoe@example.com")
-    driver.find_element(By.NAME, "password").send_keys("SecurePass123!")
-    driver.find_element(By.NAME, "confirm_password").send_keys("SecurePass123!")
+    # Enter invalid login credentials
+    driver.find_element(By.ID, "username").send_keys("invaliduser")
+    driver.find_element(By.ID, "password").send_keys("wrongpassword")
+    driver.find_element(By.ID, "login-btn").click()
     
-    # Submit registration form
-    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
-    
-    # Verify registration confirmation
-    success_msg = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.CLASS_NAME, "alert-success"))
+    # Verify the error message is displayed
+    error_element = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.ID, "error-message"))
     )
-    assert "Registration successful" in success_msg.text
-    print("User registration test passed!")
+    
+    assert error_element.is_displayed(), "Error message was not displayed!"
+    print("Invalid login test passed!")
 
-test_user_registration()
+test_invalid_login()
 driver.quit()
